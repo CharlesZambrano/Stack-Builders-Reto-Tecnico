@@ -17,7 +17,7 @@ Antes de empezar, asegúrate de tener lo siguiente instalado:
 
 - **Java 21** o superior
 - **Docker** y **Docker Compose**
-- **Gradle** (opcional si no usas los wrappers incluidos)
+- **Gradle**
 
 ## Configuración del Proyecto
 

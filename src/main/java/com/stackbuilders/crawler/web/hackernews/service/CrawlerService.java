@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.stackbuilders.crawler.web.hackernews.dto.HackerNewsApiDTO;
 import com.stackbuilders.crawler.web.hackernews.model.HackerNewsEntry;
 import com.stackbuilders.crawler.web.hackernews.repository.HackerNewsEntryRepository;
 
@@ -42,28 +43,33 @@ public class CrawlerService {
         // Procesar y guardar las nuevas historias
         newStoryIds.forEach(id -> {
             try {
-                // Obtener detalles de la historia
-                HackerNewsEntry entry = webClient.get()
+                // Obtener detalles de la historia desde la API de Hacker News
+                HackerNewsApiDTO apiEntry = webClient.get()
                         .uri("/item/{id}.json", id)
                         .retrieve()
-                        .bodyToMono(HackerNewsEntry.class)
+                        .bodyToMono(HackerNewsApiDTO.class)
                         .block();
 
-                if (entry != null) {
+                if (apiEntry != null) {
                     logger.info("Procesando historia con ID: {}", id);
 
+                    // Mapear DTO a la entidad de la base de datos
+                    HackerNewsEntry entry = new HackerNewsEntry();
+                    entry.setNumber(apiEntry.getId().toString());
+                    entry.setTitle(apiEntry.getTitle() != null ? apiEntry.getTitle() : "Sin título");
+
+                    // Usar 'descendants' de la API de Hacker News para el número de comentarios
+                    entry.setComments(apiEntry.getDescendants() != null ? apiEntry.getDescendants() : 0);
+
+                    // Usar 'score' de la API de Hacker News para el número de puntos
+                    entry.setPoints(apiEntry.getScore() != null ? apiEntry.getScore() : 0);
+
                     // Convertir Unix Time (time) a LocalDateTime (timestamp)
-                    LocalDateTime createdTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(entry.getTime()),
+                    LocalDateTime createdTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(apiEntry.getTime()),
                             ZoneOffset.UTC);
                     entry.setTimestamp(createdTime); // Asignar el tiempo convertido
 
-                    // Completar campos
-                    entry.setNumber(id.toString());
-                    entry.setComments(entry.getComments() != null ? entry.getComments() : 0);
-                    entry.setPoints(entry.getPoints() != null ? entry.getPoints() : 0);
-                    entry.setTitle(entry.getTitle() != null ? entry.getTitle() : "Sin título");
-
-                    // Guardar la entrada
+                    // Guardar la entrada en la base de datos
                     hackerNewsEntryRepository.save(entry);
                     logger.info("Entrada guardada en la base de datos: {}", entry);
                 } else {

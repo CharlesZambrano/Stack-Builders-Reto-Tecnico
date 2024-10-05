@@ -9,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -58,7 +57,4 @@ public class HackerNewsEntry implements Serializable {
     @NotNull(message = "El timestamp no puede estar vacío")
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
-
-    @Transient
-    private Integer time;
 }

@@ -29,10 +29,9 @@ public class CrawlerService {
     @Transactional
     public void scrapeAndStoreNewsEntries() {
         logger.info("Iniciando el proceso de scraping de Hacker News.");
-        int batchSize = 30; // Tamaño del lote de historias a procesar
-        int offset = 0; // Controla qué historias se están consultando
+        int batchSize = 30;
+        int offset = 0;
 
-        // Intentar obtener 30 nuevas historias que no existan ya en la base de datos
         List<Integer> newStoryIds = findNewStoryIds(batchSize, offset);
 
         if (newStoryIds.isEmpty()) {
@@ -40,10 +39,8 @@ public class CrawlerService {
             return;
         }
 
-        // Procesar y guardar las nuevas historias
         newStoryIds.forEach(id -> {
             try {
-                // Obtener detalles de la historia desde la API de Hacker News
                 HackerNewsApiDTO apiEntry = webClient.get()
                         .uri("/item/{id}.json", id)
                         .retrieve()
@@ -53,23 +50,18 @@ public class CrawlerService {
                 if (apiEntry != null) {
                     logger.info("Procesando historia con ID: {}", id);
 
-                    // Mapear DTO a la entidad de la base de datos
                     HackerNewsEntry entry = new HackerNewsEntry();
                     entry.setNumber(apiEntry.getId().toString());
                     entry.setTitle(apiEntry.getTitle() != null ? apiEntry.getTitle() : "Sin título");
 
-                    // Usar 'descendants' de la API de Hacker News para el número de comentarios
                     entry.setComments(apiEntry.getDescendants() != null ? apiEntry.getDescendants() : 0);
 
-                    // Usar 'score' de la API de Hacker News para el número de puntos
                     entry.setPoints(apiEntry.getScore() != null ? apiEntry.getScore() : 0);
 
-                    // Convertir Unix Time (time) a LocalDateTime (timestamp)
                     LocalDateTime createdTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(apiEntry.getTime()),
                             ZoneOffset.UTC);
-                    entry.setTimestamp(createdTime); // Asignar el tiempo convertido
+                    entry.setTimestamp(createdTime);
 
-                    // Guardar la entrada en la base de datos
                     hackerNewsEntryRepository.save(entry);
                     logger.info("Entrada guardada en la base de datos: {}", entry);
                 } else {
@@ -84,33 +76,28 @@ public class CrawlerService {
     }
 
     private List<Integer> findNewStoryIds(int batchSize, int offset) {
-        int attempts = 0; // Controla cuántas veces se han intentado obtener nuevas historias
+        int attempts = 0;
         List<Integer> newStoryIds;
 
         do {
-            // Obtener un lote de 30 historias (paginar con offset)
             List<Integer> topStoryIds = getTopStoryIds(offset, batchSize);
 
-            // Filtrar las que ya existen en la base de datos
             newStoryIds = topStoryIds.stream()
                     .filter(id -> !hackerNewsEntryRepository.existsByNumber(id.toString()))
                     .collect(Collectors.toList());
 
             if (newStoryIds.isEmpty()) {
-                // Si todas ya existen, aumentar el offset para buscar las siguientes 30
-                // historias
                 offset += batchSize;
                 attempts++;
                 logger.info("Todas las historias en este lote ya existen. Intentando con el siguiente lote de 30.");
             }
 
-        } while (newStoryIds.isEmpty() && attempts < 5); // Limitar a 5 intentos para evitar loops infinitos
+        } while (newStoryIds.isEmpty() && attempts < 5);
 
         return newStoryIds;
     }
 
     private List<Integer> getTopStoryIds(int offset, int limit) {
-        // Obtener los IDs de las historias principales y aplicar paginación interna
         List<Integer> allTopStoryIds = webClient.get()
                 .uri("/topstories.json?print=pretty")
                 .retrieve()
@@ -120,10 +107,9 @@ public class CrawlerService {
 
         if (allTopStoryIds == null || allTopStoryIds.isEmpty()) {
             logger.error("No se obtuvieron IDs de historias de Hacker News.");
-            return List.of(); // Devolver lista vacía si no se obtuvieron IDs
+            return List.of();
         }
 
-        // Aplicar paginación interna
         return allTopStoryIds.stream()
                 .skip(offset)
                 .limit(limit)

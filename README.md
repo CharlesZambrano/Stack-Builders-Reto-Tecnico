@@ -1,9 +1,8 @@
-
 # Hacker News Web Crawler
 
 ## Descripción del Proyecto
 
-Este proyecto es un web crawler desarrollado en Java utilizando **Spring Boot** y **Jsoup** para realizar scraping de las primeras 30 entradas de [Hacker News](https://news.ycombinator.com/). El sistema extrae información como el número de la entrada, el título, los puntos y el número de comentarios.
+Este proyecto es un web crawler desarrollado en Java utilizando **Spring Boot** y la **API de HackerNews** para realizar scraping [Hacker News](https://news.ycombinator.com/).Tomando las primeras 30 entradas que no existan en la Base de Datos de PostgreSQL. El sistema extrae información como el número de la entrada, el título, los puntos y el número de comentarios.
 
 Además, permite realizar dos tipos de filtrados:
 
@@ -56,6 +55,8 @@ Puedes acceder a la documentación Swagger para explorar y probar los endpoints 
 ```
 http://localhost:8080/swagger-ui.html
 ```
+
+O importar el archivo **api-docs.json** dentro de Postman.
 
 ### 4. Base de Datos
 
@@ -127,4 +128,3 @@ Para ejecutar la aplicación localmente sin Docker, sigue estos pasos:
 ## Contribuciones
 
 Las contribuciones son bienvenidas. Si tienes sugerencias o encuentras errores, por favor abre un **issue** o envía un **pull request**.
-

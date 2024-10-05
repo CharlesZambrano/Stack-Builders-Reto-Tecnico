@@ -8,9 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedStoredProcedureQueries;
-import jakarta.persistence.NamedStoredProcedureQuery;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -28,10 +27,6 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 @Entity
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(name = "HackerNewsEntry.getEntriesGreaterThanFiveWords", procedureName = "get_news_entries_greater_than_five_words", resultClasses = HackerNewsEntry.class),
-        @NamedStoredProcedureQuery(name = "HackerNewsEntry.getEntriesLessThanOrEqualToFiveWords", procedureName = "get_news_entries_less_than_or_equal_five_words", resultClasses = HackerNewsEntry.class)
-})
 @Table(name = "hacker_news_entry")
 public class HackerNewsEntry implements Serializable {
 
@@ -63,4 +58,7 @@ public class HackerNewsEntry implements Serializable {
     @NotNull(message = "El timestamp no puede estar vacío")
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
+
+    @Transient
+    private Integer time;
 }

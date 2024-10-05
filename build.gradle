@@ -22,7 +22,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // Jsoup for web scraping
+    // WebClient for reactive web requests (WebFlux)
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Jsoup for web scraping (if needed in future)
     implementation 'org.jsoup:jsoup:1.16.1'
 
     // MapStruct for DTO mapping
@@ -31,9 +34,6 @@ dependencies {
 
     // SpringDoc OpenAPI 3 for Swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
-
-    //Spring WebFlux
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     // Lombok to reduce boilerplate code
     compileOnly 'org.projectlombok:lombok'

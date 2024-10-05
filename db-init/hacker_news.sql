@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS hacker_news_entry (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE UNIQUE INDEX idx_hacker_news_number ON hacker_news_entry(number);
+
 -- Tabla para el historial de solicitudes de filtrado
 CREATE TABLE IF NOT EXISTS filter_request_history (
     id SERIAL PRIMARY KEY,

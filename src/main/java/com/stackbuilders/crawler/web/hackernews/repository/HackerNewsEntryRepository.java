@@ -16,4 +16,6 @@ public interface HackerNewsEntryRepository extends JpaRepository<HackerNewsEntry
 
     @Procedure(name = "HackerNewsEntry.getEntriesLessThanOrEqualToFiveWords")
     Page<HackerNewsEntry> getEntriesLessThanOrEqualToFiveWords(Pageable pageable);
+
+    boolean existsByNumber(String number);
 }

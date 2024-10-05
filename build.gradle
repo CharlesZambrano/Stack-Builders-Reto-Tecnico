@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.4'
+    id 'org.springframework.boot' version '3.1.6'
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
@@ -25,7 +25,7 @@ dependencies {
     // WebClient for reactive web requests (WebFlux)
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-    // Jsoup for web scraping (if needed in future)
+    // Jsoup for web scraping
     implementation 'org.jsoup:jsoup:1.16.1'
 
     // MapStruct for DTO mapping
